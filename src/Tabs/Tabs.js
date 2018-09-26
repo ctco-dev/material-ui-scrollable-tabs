@@ -147,6 +147,9 @@ class Tabs extends Component {
   }
 
   componentDidUpdate(prevProps) {
+    if (this.props.initialSelectedIndex !== prevProps.initialSelectedIndex) {
+      this.scrollSelectedIntoView(this.state.selectedIndex);
+    }
     /**
      * If the withWidth decorator changes the viewport size then it's likely the selected tab changed size as well.
      * This means the indicator will not be the appropriate size any longer.  Force another update to ensure the
