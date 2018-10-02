@@ -15,7 +15,7 @@ function getStyles(props, context) {
   return {
     root: {
       color: props.selected ? tabs.selectedTextColor : tabs.textColor,
-      minWidth: isLargeView ? '160px' : '72px',
+      minWidth: '72px',
       maxWidth: '264px',
       width,
       padding: 0,
