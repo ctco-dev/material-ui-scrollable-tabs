@@ -14,13 +14,15 @@ function getStyles(props, context) {
 
   return {
     root: {
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
       color: props.selected ? tabs.selectedTextColor : tabs.textColor,
       minWidth: '72px',
       maxWidth: '264px',
       width,
       padding: 0,
       border: 0,
-      verticalAlign: 'top',
     },
     button: {
       display: 'flex',
@@ -65,6 +67,10 @@ class Tab extends Component {
      * Sets the icon of the tab, you can pass `FontIcon` or `SvgIcon` elements.
      */
     icon: PropTypes.node,
+    /**
+     * Sets the right icon of the tab.
+     */
+    rightIcon: PropTypes.node,
     /**
      * @ignore
      */
@@ -113,15 +119,15 @@ class Tab extends Component {
   static defaultProps = {
     isLargeView: false,
     isMultiLine: false,
-  }
+  };
 
   static contextTypes = {
     muiTheme: PropTypes.object.isRequired,
   };
 
   getMeasurements = () => {
-    if (this.buttonComponent.button instanceof Element) {
-      const boundingClientRect = this.buttonComponent.button.getBoundingClientRect();
+    if (this.tabContainer instanceof Element) {
+      const boundingClientRect = this.tabContainer.getBoundingClientRect();
       return {
         top: boundingClientRect.top,
         bottom: boundingClientRect.bottom,
@@ -131,7 +137,7 @@ class Tab extends Component {
         width: boundingClientRect.width,
       };
     } else return {};
-  }
+  };
 
   handleClick = (event) => {
     if (this.props.onClick) {
@@ -143,6 +149,7 @@ class Tab extends Component {
   render() {
     const {
       icon,
+      rightIcon,
       index, // eslint-disable-line no-unused-vars
       onActive, // eslint-disable-line no-unused-vars
       onClick, // eslint-disable-line no-unused-vars
@@ -175,28 +182,44 @@ class Tab extends Component {
       }
       iconElement = React.cloneElement(icon, iconProps);
     }
+    let rightIconElement;
+    if (rightIcon && React.isValidElement(rightIcon)) {
+      const iconProps = {
+        style: {
+          fontSize: 24,
+          color: styles.root.color,
+          paddingBottom: '0px',
+          flexShrink: 0,
+        },
+      };
+      rightIconElement = React.cloneElement(rightIcon, iconProps);
+    }
 
     const rippleOpacity = 0.3;
     const rippleColor = this.context.muiTheme.tabs.selectedTextColor;
 
     return (
-      <EnhancedButton
-        {...other}
+      <div
         style={Object.assign(styles.root, style)}
-        focusRippleColor={rippleColor}
-        touchRippleColor={rippleColor}
-        focusRippleOpacity={rippleOpacity}
-        touchRippleOpacity={rippleOpacity}
-        onClick={this.handleClick}
-        ref={(buttonComponent) => {
-          this.buttonComponent = buttonComponent;
+        ref={(tabContainer) => {
+          this.tabContainer = tabContainer;
         }}
       >
-        <div style={Object.assign(styles.button, buttonStyle)} >
-          {iconElement}
-          {label ? <span style={styles.label}>{label}</span> : null }
-        </div>
-      </EnhancedButton>
+        <EnhancedButton
+          {...other}
+          focusRippleColor={rippleColor}
+          touchRippleColor={rippleColor}
+          focusRippleOpacity={rippleOpacity}
+          touchRippleOpacity={rippleOpacity}
+          onClick={this.handleClick}
+        >
+          <div style={Object.assign(styles.button, buttonStyle)}>
+            {iconElement}
+            {label ? <span style={styles.label}>{label}</span> : null}
+          </div>
+        </EnhancedButton>
+        {rightIconElement}
+      </div>
     );
   }
 }
